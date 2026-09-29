@@ -1,0 +1,48 @@
+[project]
+name = "bamm-gui"
+version = "0.1.0"
+description = "A PyBaMM GUI built on the Battery Parameter eXchange (BPX) format"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Sam Affleck", email = "sam.affleck@hotmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "bpx>=1.1,<1.2",
+    "numpy>=2.0",
+    "pybamm>=25.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.0,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003", "SIM118"]  # SIM118: ParameterValues is not a dict
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    # bpx's expression parser uses pyparsing's deprecated camelCase API
+    "ignore:.*deprecated - use:DeprecationWarning",
+    # the vendored BPX examples' stoichiometry limits give 4.2018 V against a 4.2 V cut-off
+    "ignore:The maximum voltage computed from the STO limits:UserWarning",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.2",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.9",
+]
+
+[tool.uv.sources]
+# Dev-time link to the local BPX checkout so fixes can be upstreamed. Remove before release.
+bpx = { path = "../BPX", editable = true }
